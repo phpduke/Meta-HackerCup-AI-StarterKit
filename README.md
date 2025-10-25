@@ -33,25 +33,48 @@ This approach ensures correctness through differential testing while achieving o
 - Python 3.8 or higher
 - pip package manager
 
-### Step 1: Clone the Repository
+### Quick Setup (Recommended)
 
 ```bash
-git clone <repository-url>
-cd temp-agents
+# 1. Clone the repository
+git clone <repo-url>
+cd Meta-HackerCup-AI-StarterKit
+
+# 2. Run the automated setup
+python3 setup.py
 ```
 
-### Step 2: Install Dependencies
+The setup script will:
+- ✅ Create `config.yaml` from template
+- ✅ Create workspace directory
+- ✅ Check for required files
+- ✅ Provide next steps guidance
+
+### Manual Setup (Alternative)
+
+If you prefer manual setup:
+
+#### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/amankumarkeshu/Meta-HackerCup-AI-StarterKit.git
+cd Meta-HackerCup-AI-StarterKit
+```
+
+#### Step 2: Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
 This installs:
-- `langchain` - Multi-agent framework
-- `langchain-google-genai` - Google Gemini integration (FREE tier)
-- `pyyaml` - Configuration management
+- `langchain==0.3.0` - Multi-agent framework
+- `langchain-google-genai==2.0.0` - Google Gemini integration (FREE tier)
+- `pyyaml==6.0.2` - Configuration management
+- `pytest==8.0.0` - Testing framework
+- `pytest-cov==4.0.0` - Test coverage
 
-### Step 3: Get FREE API Key
+#### Step 3: Get FREE API Key
 
 **Google Gemini (FREE)**
 
@@ -63,13 +86,15 @@ This installs:
 
 ### Set API Key
 
-Edit `config.yaml`:
+After running `python3 setup.py`, edit the generated `config.yaml`:
 
 ```yaml
 api_keys:
   # Google Gemini API Key - FREE TIER AVAILABLE!
-  google: "AIza...your-google-api-key"
+  google: "AIza...your-google-api-key"  # Replace with your actual key
 ```
+
+**Security Note**: The setup script creates `config.yaml` from `config.template.yaml`. Never commit your actual API key to version control.
 
 ### Choose Models
 
@@ -194,16 +219,57 @@ workspace/
 ```
 
 
+## 🧪 Testing & Development
+
+### Run Tests
+
+The project includes a comprehensive test suite:
+
+```bash
+# Run all tests
+python run_tests.py
+
+# Or use pytest directly
+pytest tests/ -v
+
+# Run tests with coverage
+pytest tests/ --cov=. --cov-report=html
+```
+
+### Test Coverage
+
+- **CodeExecutor**: Tests for code execution, error handling, timeouts
+- **OutputComparator**: Tests for file comparison and diff generation  
+- **ProblemSolverOrchestrator**: Tests for configuration and initialization
+- **Integration Tests**: End-to-end workflow validation
+
+### Development Setup
+
+```bash
+# Install development dependencies
+pip install -r requirements.txt
+
+# Run setup script
+python3 setup.py
+
+# Run tests to verify installation
+python run_tests.py
+```
+
 ## 📦 Project Structure
 
 ```
-temp-agents/
+Meta-HackerCup-AI-StarterKit/
 ├── PROBLEM.txt                   # Your problem statement (REQUIRED)
-├── config.yaml                   # Configuration file
+├── config.yaml                   # Configuration file (created by setup.py)
+├── config.template.yaml          # Secure configuration template
+├── setup.py                      # Automated project setup script
+├── run_tests.py                  # Test runner script
 ├── main.py                       # Entry point
 ├── orchestrator.py               # Multi-agent coordinator
 ├── viewer.html                   # Web-based results viewer
-├── requirements.txt              # Python dependencies
+├── requirements.txt              # Python dependencies (pinned versions)
+├── .gitignore                    # Git ignore rules (includes sensitive files)
 ├── README.md                     # This file
 ├── QUICKSTART.md                 # Quick reference guide
 ├── LICENSE                       # MIT License
@@ -217,6 +283,11 @@ temp-agents/
 │   ├── executor.py              # Code execution utility
 │   ├── comparator.py            # Output comparison utility
 │   └── progress.py              # Live progress indicators
+├── tests/                        # Unit test suite
+│   ├── __init__.py
+│   ├── test_executor.py         # CodeExecutor tests
+│   ├── test_comparator.py       # OutputComparator tests
+│   └── test_orchestrator.py     # Orchestrator tests
 └── workspace/                    # Generated files (gitignored)
     └── ...
 ```
