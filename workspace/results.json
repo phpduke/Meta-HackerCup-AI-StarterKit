@@ -1,0 +1,20 @@
+{
+  "problem_statement": "Given an array of integers, find the maximum sum of any contiguous subarray.\n\nInput Format:\n- First line: n (size of array)\n- Second line: n space-separated integers\n\nOutput Format:\n- Single integer: maximum subarray sum\n\nConstraints:\n- 1 <= n <= 10^5\n- -10^4 <= array[i] <= 10^4\n\nExample:\nInput:\n5\n-2 1 -3 4 -1\n\nOutput:\n4\n\nExplanation: The subarray [4] has the maximum sum of 4.",
+  "test_input": "5\n-2 1 -3 4 -1\n\n3\n1 2 3\n\n4\n-5 -2 -8 -1\n\n1\n7\n\n4\n-2 3 4 -1",
+  "test_output": "4\n",
+  "brute_force_code": "n = int(input())\narr = list(map(int, input().split()))\n\nmax_so_far = float('-inf')\n\nfor i in range(n):\n    current_sum = 0\n    for j in range(i, n):\n        current_sum += arr[j]\n        max_so_far = max(max_so_far, current_sum)\n\nprint(max_so_far)",
+  "optimal_attempts": [
+    {
+      "attempt_number": 1,
+      "timestamp": 1761188535.006763,
+      "code": "import sys\n\ndef solve():\n    n = int(sys.stdin.readline())\n    arr = list(map(int, sys.stdin.readline().split()))\n\n    # Kadane's Algorithm\n    # max_so_far stores the maximum sum found globally\n    # current_max stores the maximum sum of a subarray ending at the current position\n    \n    max_so_far = arr[0]\n    current_max = arr[0]\n\n    for i in range(1, n):\n        # For the current element arr[i], the maximum sum ending here is either\n        # arr[i] itself (starting a new subarray) or arr[i] added to the\n        # maximum sum ending at the previous position (extending the subarray).\n        current_max = max(arr[i], current_max + arr[i])\n        \n        # Update the global maximum sum found so far.\n        max_so_far = max(max_so_far, current_max)\n    \n    print(max_so_far)\n\nsolve()",
+      "verdict": "Accepted",
+      "error_message": null,
+      "execution_success": true,
+      "output_match": true,
+      "output_diff": null
+    }
+  ],
+  "success": true,
+  "total_attempts": 1
+}

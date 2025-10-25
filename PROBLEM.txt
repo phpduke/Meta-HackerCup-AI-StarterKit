@@ -1,0 +1,22 @@
+Given an array of integers, find the maximum sum of any contiguous subarray.
+
+Input Format:
+- First line: n (size of array)
+- Second line: n space-separated integers
+
+Output Format:
+- Single integer: maximum subarray sum
+
+Constraints:
+- 1 <= n <= 10^5
+- -10^4 <= array[i] <= 10^4
+
+Example:
+Input:
+5
+-2 1 -3 4 -1
+
+Output:
+4
+
+Explanation: The subarray [4] has the maximum sum of 4.

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Problem Solver - Results Viewer</title>
+
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 6px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .problem-statement {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 1.05rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .code-header {
+            background: #1e1e1e;
+            padding: 10px 15px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        pre {
+            margin: 0 !important;
+            background: transparent !important;
+        }
+
+        pre code {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .test-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .test-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .test-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .test-box pre {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .attempts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .attempt-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .attempt-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .attempt-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .attempt-header h3 {
+            font-size: 1.3rem;
+            color: #333;
+        }
+
+        .verdict {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .verdict.accepted {
+            background: #10b981;
+            color: white;
+        }
+
+        .verdict.wrong-answer {
+            background: #ef4444;
+            color: white;
+        }
+
+        .verdict.runtime-error {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .verdict.generation-failed {
+            background: #6b7280;
+            color: white;
+        }
+
+        .attempt-body {
+            padding: 20px;
+        }
+
+        .attempt-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .error-message {
+            background: #fee;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            color: #991b1b;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            width: 95%;
+            max-width: 1600px;
+            height: 90vh;
+            border-radius: 12px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .close:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            height: calc(90vh - 80px);
+        }
+
+        .modal-column {
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 2px solid #e0e0e0;
+        }
+
+        .modal-column:last-child {
+            border-right: none;
+        }
+
+        .modal-column h3 {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            z-index: 10;
+        }
+
+        .modal-column pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .diff-highlight {
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        @media (max-width: 1024px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-column {
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            .test-data {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Multi-Agent Problem Solver</h1>
+            <p>Results Viewer - Brute Force vs Optimal Solutions</p>
+        </header>
+
+        <div class="content" id="content">
+            <div class="loading">Loading results...</div>
+        </div>
+    </div>
+
+    <!-- Modal for Diff Viewer -->
+    <div id="diffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Output Comparison</h2>
+                <span class="close" onclick="closeDiffModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-column">
+                    <h3>📥 Input</h3>
+                    <pre id="modalInput"></pre>
+                </div>
+                <div class="modal-column">
+                    <h3>✅ Expected Output</h3>
+                    <pre id="modalExpected"></pre>
+                </div>
+                <div class="modal-column">
+                    <h3>📤 Actual Output</h3>
+                    <pre id="modalActual"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let resultsData = null;
+
+        // Load results from JSON
+        async function loadResults() {
+            try {
+                const response = await fetch('workspace/results.json');
+                resultsData = await response.json();
+                renderResults();
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="section">
+                        <h2 style="color: #ef4444;">Error Loading Results</h2>
+                        <p>Could not load results.json. Make sure you've run the solver first.</p>
+                        <p style="margin-top: 10px; color: #666;">Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderResults() {
+            const content = document.getElementById('content');
+
+            const successRate = resultsData.total_attempts > 0
+                ? ((resultsData.optimal_attempts.filter(a => a.verdict === 'Accepted').length / resultsData.total_attempts) * 100).toFixed(1)
+                : 0;
+
+            content.innerHTML = `
+                <div class="summary-stats">
+                    <div class="stat-card">
+                        <h4>Status</h4>
+                        <div class="value" style="color: ${resultsData.success ? '#10b981' : '#ef4444'}">
+                            ${resultsData.success ? '✓ Solved' : '✗ Unsolved'}
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Attempts</h4>
+                        <div class="value">${resultsData.total_attempts}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Success Rate</h4>
+                        <div class="value">${successRate}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Accepted Solutions</h4>
+                        <div class="value" style="color: #10b981">
+                            ${resultsData.optimal_attempts.filter(a => a.verdict === 'Accepted').length}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📋 Problem Statement</h2>
+                    <div class="problem-statement" id="problemStatement"></div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🧪 Test Data</h2>
+                    <div class="test-data">
+                        <div class="test-box">
+                            <h4>Input</h4>
+                            <pre>${escapeHtml(resultsData.test_input)}</pre>
+                        </div>
+                        <div class="test-box">
+                            <h4>Expected Output</h4>
+                            <pre>${escapeHtml(resultsData.test_output)}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🐌 Brute Force Solution</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>brute.py</span>
+                            <span>Correct Reference Solution</span>
+                        </div>
+                        <pre><code class="language-python">${escapeHtml(resultsData.brute_force_code)}</code></pre>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">⚡ Optimal Solution Attempts (Reverse Order)</h2>
+                    <div class="attempts-container">
+                        ${renderAttempts()}
+                    </div>
+                </div>
+            `;
+
+            // Render LaTeX in problem statement
+            const problemDiv = document.getElementById('problemStatement');
+            problemDiv.textContent = resultsData.problem_statement;
+            renderMathInElement(problemDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ]
+            });
+
+            // Apply syntax highlighting
+            Prism.highlightAll();
+        }
+
+        function renderAttempts() {
+            // Reverse order - show latest attempts first
+            const attempts = [...resultsData.optimal_attempts].reverse();
+
+            return attempts.map((attempt, index) => {
+                const actualAttemptNum = resultsData.total_attempts - index;
+                const verdictClass = getVerdictClass(attempt.verdict);
+                const hasCode = attempt.code && attempt.code.trim().length > 0;
+
+                return `
+                    <div class="attempt-card">
+                        <div class="attempt-header">
+                            <h3>Attempt ${actualAttemptNum}</h3>
+                            <span class="verdict ${verdictClass}">${attempt.verdict || 'Unknown'}</span>
+                        </div>
+                        <div class="attempt-body">
+                            ${hasCode ? `
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span>optimal_attempt_${actualAttemptNum}.py</span>
+                                    </div>
+                                    <pre><code class="language-python">${escapeHtml(attempt.code)}</code></pre>
+                                </div>
+                            ` : ''}
+
+                            ${attempt.error_message ? `
+                                <div class="error-message">${escapeHtml(attempt.error_message)}</div>
+                            ` : ''}
+
+                            ${attempt.execution_success && !attempt.output_match ? `
+                                <div class="attempt-actions">
+                                    <button class="btn btn-primary" onclick="showDiff(${actualAttemptNum})">
+                                        📊 Show Output Diff
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getVerdictClass(verdict) {
+            if (!verdict) return 'generation-failed';
+            const v = verdict.toLowerCase().replace(/\s+/g, '-');
+            return v;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function showDiff(attemptNum) {
+            try {
+                const actualOutput = await fetch(`workspace/optimal_attempt_${attemptNum}_output.txt`).then(r => r.text());
+
+                document.getElementById('modalInput').textContent = resultsData.test_input;
+                document.getElementById('modalExpected').textContent = resultsData.test_output;
+                document.getElementById('modalActual').textContent = actualOutput;
+
+                document.getElementById('diffModal').style.display = 'block';
+            } catch (error) {
+                alert('Could not load output file: ' + error.message);
+            }
+        }
+
+        function closeDiffModal() {
+            document.getElementById('diffModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('diffModal');
+            if (event.target == modal) {
+                closeDiffModal();
+            }
+        }
+
+        // Load results on page load
+        loadResults();
+    </script>
+</body>
+</html>
