@@ -1,0 +1,40 @@
+# Multi-Agent Programming Task Solver Configuration Template
+# Copy this file to config.yaml and fill in your API keys
+
+# API Keys Configuration
+api_keys:
+  # Google Gemini API Key - FREE TIER AVAILABLE!
+  # Get yours at: https://aistudio.google.com/app/apikey
+  google: "your-google-api-key-here"
+
+# Model Configuration for Each Agent
+# FORMAT: "google:model-name"
+#
+# Available Google Gemini Models (FREE TIER):
+# It has a generous free tier for APIs, can start from here. (Details: https://ai.google.dev/gemini-api/docs/rate-limits)
+#   - "google:gemini-2.5-pro"           # Most capable, slower (100 free requests / day) - winning model
+#   - "google:gemini-2.5-flash"         # Latest & fastest (250 free requests / day)
+#   - "google:gemini-2.5-flash-lite"    # Fast & Cheap (1000 free requests / day) - good for testing
+#
+models:
+  tester_agent: "google:gemini-2.5-flash-lite"    
+  brute_agent: "google:gemini-2.5-flash-lite"     
+  optimal_agent: "google:gemini-2.5-flash-lite"   
+
+# Execution Parameters
+execution:
+  max_optimal_attempts: 5
+  timeout_seconds: 30  # Timeout for code execution
+
+# Output Configuration
+output:
+  workspace_dir: "./workspace"
+  preserve_intermediate: true  # Keep all generated files
+
+# File Names
+files:
+  test_inputs: "small_inputs.txt"
+  brute_solution: "brute.py"
+  brute_outputs: "small_outputs.txt"
+  optimal_solution: "optimal.py"
+  optimal_outputs: "op.txt"
