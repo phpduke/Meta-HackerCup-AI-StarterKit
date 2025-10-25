@@ -45,10 +45,10 @@ python3 setup.py
 ```
 
 The setup script will:
-- ✅ Create `config.yaml` from template
-- ✅ Create workspace directory
-- ✅ Check for required files
-- ✅ Provide next steps guidance
+-  Create `config.yaml` from template
+-  Create workspace directory
+-  Check for required files
+-  Provide next steps guidance
 
 ### Manual Setup (Alternative)
 
